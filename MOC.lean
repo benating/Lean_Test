@@ -8,31 +8,28 @@ namespace exp
 
 infixl `+` := add
 
-def output : exp → ℕ
+def eval : exp → ℕ
 | (num x) := x
-| (exp1 + exp2) := output exp1 + output exp2
+| (exp1 + exp2) := eval exp1 + eval exp2
 
-theorem normalForms (e : exp) : (∃ x : ℕ, output e = x) :=
+theorem normal_forms (e : exp) : (∃ x : ℕ, eval e = x) :=
 begin
 
-induction e,
+  induction e,
 
--- Base case
-case num a 
-{ have h : output (num a) = a, by refl,
-  exact (exists.intro a h) 
-},
+    -- Base case
+    case num a 
+    { exact ⟨eval (num a), by refl⟩ },
 
--- Recursive case
-case add exp1 exp2
-{ have h_add : output (exp1 + exp2) = output exp1 + output exp2, by refl,
-  have inductive_step : ∃ x : ℕ, output exp1 + output exp2 = x,
-  from 
-    match ih_1, ih_2 with
-      ⟨y, exp1_norm⟩, ⟨z, exp2_norm⟩ := ⟨(y + z), by rw [exp1_norm, exp2_norm]⟩
-    end,
-  exact (exists.intro (output (exp1 + exp2)) (h_add)) 
-},
+    -- Recursive case
+    case add exp1 exp2
+    { have inductive_step : ∃ x : ℕ, eval exp1 + eval exp2 = x,
+      from 
+        match ih_1, ih_2 with
+          ⟨y, exp1_norm⟩, ⟨z, exp2_norm⟩ := ⟨(y + z), by rw [exp1_norm, exp2_norm]⟩
+        end,
+      exact ⟨eval (exp1 + exp2), by refl⟩,
+    },
 
 end
 
