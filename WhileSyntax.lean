@@ -44,9 +44,9 @@ end wComm
 
 def state := string → ℕ
 
-inductive config : Type 1
-| configE : wExpr → state → config
-| configB : wBool → state → config
-| configC : wComm → state → config
+inductive config : Type
+| configE : wExpr × state → config
+| configB : wBool × state → config
+| configC : wComm × state → config
 
 end whileSyntax
