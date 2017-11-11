@@ -43,10 +43,12 @@ def bigStepExpr : configExpr → configExpr
 | (configE (num a * num b, state)) := configE (num (a * b), state)
 | (configE (exp1 + exp2, state)) := let (configE (exp1', state')) := bigStepExpr (configE (exp1, state)),
                                         (configE (exp2', state'')) := bigStepExpr (configE (exp2, state')) in
-                                      configE (exp1' + exp2', state'')
+                                      have sizeof exp2' + sizeof exp1' < sizeof exp2 + sizeof exp1, from sorry,
+                                      bigStepExpr $ configE (exp1' + exp2', state'')
 | (configE (exp1 * exp2, state)) := let (configE (exp1', state')) := bigStepExpr (configE (exp1, state)),
                                         (configE (exp2', state'')) := bigStepExpr (configE (exp2, state')) in
-                                      configE (exp1' * exp2', state'')
+                                      have sizeof exp2' * sizeof exp1' < sizeof exp2 * sizeof exp1, from sorry,
+                                      bigStepExpr $ configE (exp1' * exp2', state'')
 
 theorem normal_forms (e : configExpr) : (∃ n : ℕ, ∃ f : string → ℕ, smallStepExpr e = configE (num n, f) ) :=
 begin
@@ -56,8 +58,10 @@ end
 def g := let (configE (a, _)) := smallStepExpr (configE (num 7 + num 6, f)) in a
 def h := let (configE (a, _)) := bigStepExpr (configE (num 7 + ident "x", f)) in a
 def i := let (configE (a, _)) := bigStepExpr exampleConfig in a
+def j := let (configE (a, _)) := smallStepExpr exampleConfig in a
 
-#reduce h
+#eval i
+#eval j
 
 
 end semantics
